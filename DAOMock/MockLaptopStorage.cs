@@ -124,5 +124,7 @@ namespace Magnuszewski.LaptopsApp.DAOMock
                 }
             }
         }
+
+        public IEnumerable<IProducer> GetProducers() => producers;
     }
 }

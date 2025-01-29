@@ -120,6 +120,23 @@ namespace Magnuszewski.LaptopsApp.DAOFile
 
         public IEnumerable<ILaptop> GetLaptopsByType(LaptopType type) => laptops.Where(l => l.Type == type);
 
+        public void AddProducer(IProducer producer)
+        {
+            producer.Id = producers.Any() ? producers.Max(p => p.Id) + 1 : 1;
+            producers.Add(producer);
+        }
+
+        public void DeleteProducer(int id)
+        {
+            var producer = producers.FirstOrDefault(p => p.Id == id);
+            if (producer != null)
+            {
+                producers.Remove(producer);
+            }
+        }
+
+        public IEnumerable<IProducer> GetProducers() => producers;
+
         private void Save()
         {
             var csv = new StringBuilder();
