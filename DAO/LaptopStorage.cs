@@ -63,5 +63,26 @@ namespace Magnuszewski.LaptopsApp.DAO
                 .Cast<ILaptop>()
                 .ToList();
         }
+
+        public void AddProducer(IProducer producer)
+        {
+            context.Producers.Add((Producer)producer); // Cast to the correct type
+            context.SaveChanges();
+        }
+
+        public void DeleteProducer(int id)
+        {
+            var producer = context.Producers.Find(id);
+            if (producer != null)
+            {
+                context.Producers.Remove(producer);
+                context.SaveChanges();
+            }
+        }
+
+        public IEnumerable<IProducer> GetProducers()
+        {
+            return context.Producers.AsEnumerable().Cast<IProducer>().ToList();
+        }
     }
 }

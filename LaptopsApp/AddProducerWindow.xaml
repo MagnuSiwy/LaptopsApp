@@ -1,0 +1,42 @@
+﻿<Window x:Class="Magnuszewski.LaptopsApp.Views.AddProducerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:Magnuszewski.LaptopsApp.Converters"
+        Title="Add Producer" Height="300" Width="500">
+    <Window.Resources>
+        <converters:StringIsNullOrEmptyConverter x:Key="StringIsNullOrEmptyConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="10">
+            <TextBlock Text="Producers" FontWeight="Bold" Margin="0,0,0,10"/>
+            <ListBox ItemsSource="{Binding Producers}" 
+                     DisplayMemberPath="Name" 
+                     SelectedItem="{Binding SelectedProducer}" 
+                     Width="200" Height="200"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Margin="10">
+            <TextBlock Text="Add New Producer" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Grid>
+                <TextBox Text="{Binding NewProducerName, UpdateSourceTrigger=PropertyChanged}" 
+                         Width="200" Height="30" Margin="0,0,0,10"/>
+                <TextBlock Text="Enter producer name" 
+                           Foreground="Gray" 
+                           VerticalAlignment="Top" 
+                           HorizontalAlignment="Left" 
+                           Margin="40,7,0,0" 
+                           IsHitTestVisible="False" 
+                           Visibility="{Binding NewProducerName, Converter={StaticResource StringIsNullOrEmptyConverter}}"/>
+            </Grid>
+            <Button Content="Add Producer" 
+                    Command="{Binding AddProducerCommand}" 
+                    Width="200" Height="30" Margin="0,0,0,10"/>
+            <Button Content="Delete Producer" 
+                    Command="{Binding DeleteProducerCommand}" 
+                    Width="200" Height="30" Margin="0,0,0,10"/>
+        </StackPanel>
+    </Grid>
+</Window>

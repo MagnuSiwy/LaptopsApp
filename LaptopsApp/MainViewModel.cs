@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Magnuszewski.LaptopsApp.Core;
 using Magnuszewski.LaptopsApp.Interfaces;
 using Magnuszewski.LaptopsApp.DAO;
+using Magnuszewski.LaptopsApp.Views;
 
 namespace Magnuszewski.LaptopsApp.ViewModels
 {
@@ -17,6 +18,7 @@ namespace Magnuszewski.LaptopsApp.ViewModels
         private ILaptop selectedLaptop;
         private ILaptop newLaptop;
         private string errorMessage;
+        private string searchQuery;
         private List<int> availableIds;
         private int nextId;
 
@@ -24,6 +26,8 @@ namespace Magnuszewski.LaptopsApp.ViewModels
         {
             this.laptopStorage = laptopStorage ?? throw new ArgumentNullException(nameof(laptopStorage));
             Laptops = new ObservableCollection<ILaptop>(laptopStorage.GetLaptops());
+            FilteredLaptops = new ObservableCollection<ILaptop>(Laptops);
+            Producers = new ObservableCollection<IProducer>(laptopStorage.GetProducers());
             LaptopTypes = Enum.GetValues(typeof(LaptopType));
 
             availableIds = new List<int>();
@@ -32,9 +36,15 @@ namespace Magnuszewski.LaptopsApp.ViewModels
             AddLaptopCommand = new RelayCommand(AddLaptop);
             SaveLaptopCommand = new RelayCommand(SaveLaptop, CanSaveLaptop);
             DeleteLaptopCommand = new RelayCommand(DeleteLaptop, CanModifyLaptop);
+            CancelAddLaptopCommand = new RelayCommand(CancelAddLaptop);
+            OpenAddProducerCommand = new RelayCommand(OpenAddProducer);
         }
 
+        public ILaptopStorage LaptopStorage => laptopStorage;
+
         public ObservableCollection<ILaptop> Laptops { get; }
+        public ObservableCollection<ILaptop> FilteredLaptops { get; }
+        public ObservableCollection<IProducer> Producers { get; }
         public Array LaptopTypes { get; }
 
         public ILaptop SelectedLaptop
@@ -70,9 +80,22 @@ namespace Magnuszewski.LaptopsApp.ViewModels
             }
         }
 
+        public string SearchQuery
+        {
+            get => searchQuery;
+            set
+            {
+                searchQuery = value;
+                OnPropertyChanged();
+                FilterLaptops();
+            }
+        }
+
         public ICommand AddLaptopCommand { get; }
         public ICommand SaveLaptopCommand { get; }
         public ICommand DeleteLaptopCommand { get; }
+        public ICommand CancelAddLaptopCommand { get; }
+        public ICommand OpenAddProducerCommand { get; }
 
         private void AddLaptop()
         {
@@ -113,6 +136,7 @@ namespace Magnuszewski.LaptopsApp.ViewModels
 
                 laptopStorage.AddLaptop(NewLaptop);
                 Laptops.Add(NewLaptop);
+                FilterLaptops();
                 NewLaptop = null;
             }
             else if (SelectedLaptop != null)
@@ -134,6 +158,7 @@ namespace Magnuszewski.LaptopsApp.ViewModels
                 }
 
                 laptopStorage.UpdateLaptop(SelectedLaptop);
+                FilterLaptops();
             }
 
             ErrorMessage = string.Empty;
@@ -148,11 +173,48 @@ namespace Magnuszewski.LaptopsApp.ViewModels
                 laptopStorage.DeleteLaptop(SelectedLaptop.Id);
                 availableIds.Add(SelectedLaptop.Id);
                 Laptops.Remove(SelectedLaptop);
+                FilterLaptops();
                 SelectedLaptop = null;
             }
         }
 
         private bool CanModifyLaptop() => SelectedLaptop != null;
+
+        private void CancelAddLaptop()
+        {
+            NewLaptop = null;
+            ErrorMessage = string.Empty;
+        }
+
+        private void OpenAddProducer()
+        {
+            var addProducerWindow = new AddProducerWindow
+            {
+                DataContext = new AddProducerViewModel(this)
+            };
+            addProducerWindow.ShowDialog();
+        }
+
+        private void FilterLaptops()
+        {
+            if (string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                FilteredLaptops.Clear();
+                foreach (var laptop in Laptops)
+                {
+                    FilteredLaptops.Add(laptop);
+                }
+            }
+            else
+            {
+                var filtered = Laptops.Where(l => l.Model.IndexOf(SearchQuery, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                FilteredLaptops.Clear();
+                foreach (var laptop in filtered)
+                {
+                    FilteredLaptops.Add(laptop);
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -14,11 +14,21 @@
 
         <!-- Left Column: Laptop Tiles -->
         <StackPanel Grid.Column="0" Margin="10">
-            <ListBox ItemsSource="{Binding Laptops}" 
+            <Grid Margin="0,0,0,10">
+                <TextBox x:Name="SearchBox" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Search by Model" 
+                           Foreground="Gray" 
+                           IsHitTestVisible="False" 
+                           VerticalAlignment="Center" 
+                           Margin="5,0,0,0"
+                           Visibility="{Binding Text, ElementName=SearchBox, Converter={StaticResource StringToVisibilityConverter}}" />
+            </Grid>
+            <ListBox ItemsSource="{Binding FilteredLaptops}" 
                      SelectedItem="{Binding SelectedLaptop}" 
                      DisplayMemberPath="Model" 
-                     Height="300" />
+                     Height="270" />
             <Button Content="Add Laptop" Command="{Binding AddLaptopCommand}" Margin="0,10,0,0"/>
+            <Button Content="Update Producers" Command="{Binding OpenAddProducerCommand}" Margin="0,10,0,0"/>
             <Button Content="Delete Laptop" Command="{Binding DeleteLaptopCommand}" Margin="0,10,0,0"/>
         </StackPanel>
 
@@ -30,13 +40,14 @@
             <TextBlock Text="Model:" FontWeight="Bold"/>
             <TextBox Text="{Binding SelectedLaptop.Model, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" Margin="0,0,0,10"/>
             <TextBlock Text="Producer:" FontWeight="Bold"/>
-            <TextBox Text="{Binding SelectedLaptop.Producer.Name, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" Margin="0,0,0,10"/>
+            <ComboBox ItemsSource="{Binding Producers}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedLaptop.Producer}" Margin="0,0,0,10"/>
             <TextBlock Text="Type:" FontWeight="Bold"/>
             <ComboBox ItemsSource="{Binding LaptopTypes}" SelectedItem="{Binding SelectedLaptop.Type}" Margin="0,0,0,10"/>
             <TextBlock Text="Price:" FontWeight="Bold"/>
             <TextBox Text="{Binding SelectedLaptop.Price, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" Margin="0,0,0,10"/>
             <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,10,0,0"/>
             <Button Content="Save" Command="{Binding SaveLaptopCommand}" Margin="0,10,0,0"/>
+            <Button Content="Cancel" Command="{Binding CancelAddLaptopCommand}" Margin="0,10,0,0"/>
         </StackPanel>
     </Grid>
 </Window>

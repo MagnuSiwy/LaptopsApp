@@ -11,5 +11,8 @@ namespace Magnuszewski.LaptopsApp.Interfaces
         void DeleteLaptop(int id);
         ILaptop GetLaptopById(int id);
         IEnumerable<ILaptop> GetLaptopsByType(LaptopType type);
+        void AddProducer(IProducer producer);
+        void DeleteProducer(int id);
+        IEnumerable<IProducer> GetProducers();
     }
 }

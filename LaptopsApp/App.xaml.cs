@@ -17,9 +17,9 @@ namespace LaptopsApp
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             var serviceCollection = new ServiceCollection();
-            // string daoAssemblyPath = @"C:\Users\panka\Documents\LaptopsApp\DAOFile\bin\Debug\net8.0-windows\DAOFile.dll";
-            string daoAssemblyPath = @"C:\Users\panka\Documents\LaptopsApp\DAOSQL\bin\Debug\net8.0-windows\DAOSQL.dll";
-            // string daoAssemblyPath = @"C:\Users\panka\Documents\LaptopsApp\DAOMock\bin\Debug\net8.0-windows\DAOMock.dll";
+            // string daoAssemblyPath = @"C:\Users\panka\Documents\GitHub\LaptopsApp\DAOFile\bin\Debug\net8.0-windows\DAOFile.dll";
+            string daoAssemblyPath = @"C:\Users\panka\Documents\GitHub\LaptopsApp\DAOSQL\bin\Debug\net8.0-windows\DAOSQL.dll";
+            // string daoAssemblyPath = @"C:\Users\panka\Documents\GitHub\LaptopsApp\DAOMock\bin\Debug\net8.0-windows\DAOMock.dll";
             ConfigureServices(serviceCollection, daoAssemblyPath);
             serviceProvider = serviceCollection.BuildServiceProvider();
 
