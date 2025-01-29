@@ -67,30 +67,9 @@ namespace Magnuszewski.LaptopsApp.ViewModels
         {
             if (SelectedProducer != null)
             {
-                if (mainViewModel != null)
-                {
-                    if (mainViewModel.LaptopStorage != null)
-                    {
-                        mainViewModel.Producers.Remove(SelectedProducer);
-                        mainViewModel.LaptopStorage.DeleteProducer(SelectedProducer.Id);
-                        SelectedProducer = null;
-                        MessageBox.Show("Producer deleted successfully.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Unable to delete producer. Storage is not available.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        Console.WriteLine("LaptopStorage is null.");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("MainViewModel is not initialized.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Console.WriteLine("MainViewModel is null.");
-                }
-            }
-            else
-            {
-                MessageBox.Show("No producer selected to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                mainViewModel.LaptopStorage.DeleteProducer(SelectedProducer.Id);
+                mainViewModel.Producers.Remove(SelectedProducer);
+                SelectedProducer = null;
             }
         }
 
