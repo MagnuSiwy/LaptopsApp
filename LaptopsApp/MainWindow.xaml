@@ -1,0 +1,42 @@
+﻿<Window x:Class="Magnuszewski.LaptopsApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Magnuszewski.LaptopsApp.ViewModels"
+        mc:Ignorable="d"
+        Title="Laptop App" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Column: Laptop Tiles -->
+        <StackPanel Grid.Column="0" Margin="10">
+            <ListBox ItemsSource="{Binding Laptops}" 
+                     SelectedItem="{Binding SelectedLaptop}" 
+                     DisplayMemberPath="Model" 
+                     Height="300" />
+            <Button Content="Add Laptop" Command="{Binding AddLaptopCommand}" Margin="0,10,0,0"/>
+            <Button Content="Delete Laptop" Command="{Binding DeleteLaptopCommand}" Margin="0,10,0,0"/>
+        </StackPanel>
+
+        <!-- Right Column: Laptop Details -->
+        <StackPanel Grid.Column="1" Margin="10">
+            <TextBlock Text="Laptop Details" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+            <TextBlock Text="ID:" FontWeight="Bold"/>
+            <TextBlock Text="{Binding SelectedLaptop.Id, FallbackValue=''}" Margin="0,0,0,10"/>
+            <TextBlock Text="Model:" FontWeight="Bold"/>
+            <TextBox Text="{Binding SelectedLaptop.Model, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" Margin="0,0,0,10"/>
+            <TextBlock Text="Producer:" FontWeight="Bold"/>
+            <TextBox Text="{Binding SelectedLaptop.Producer.Name, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" Margin="0,0,0,10"/>
+            <TextBlock Text="Type:" FontWeight="Bold"/>
+            <ComboBox ItemsSource="{Binding LaptopTypes}" SelectedItem="{Binding SelectedLaptop.Type}" Margin="0,0,0,10"/>
+            <TextBlock Text="Price:" FontWeight="Bold"/>
+            <TextBox Text="{Binding SelectedLaptop.Price, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" Margin="0,0,0,10"/>
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,10,0,0"/>
+            <Button Content="Save" Command="{Binding SaveLaptopCommand}" Margin="0,10,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

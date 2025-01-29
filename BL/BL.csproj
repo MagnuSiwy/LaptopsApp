@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net8.0-windows</TargetFramework>
+	<Nullable>enable</Nullable>
+	<UseWPF>true</UseWPF>
+	<ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<Reference Include="DAOSQL">
+			<HintPath>..\DAOSQL\bin\Debug\net8.0-windows\DAOSQL.dll</HintPath>
+		</Reference>
+		<!--<Reference Include="DAOFile">
+			<HintPath>..\path\to\DAOFile.dll</HintPath>
+		</Reference>
+		<Reference Include="DAOMock">
+			<HintPath>..\path\to\DAOMock.dll</HintPath>
+		</Reference>-->
+		<Reference Include="DAO">
+			<HintPath>..\DAO\bin\Debug\net8.0-windows\DAO.dll</HintPath>
+		</Reference>
+		<Reference Include="Core">
+			<HintPath>..\Core\bin\Debug\net8.0-windows\Core.dll</HintPath>
+		</Reference>
+		<Reference Include="Interfaces">
+			<HintPath>..\Interfaces\bin\Debug\net8.0-windows\Interfaces.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+</Project>
