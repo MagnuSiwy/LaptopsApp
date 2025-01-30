@@ -1,0 +1,95 @@
+﻿@page "/producer-page"
+@using Magnuszewski.LaptopsApp.Core
+@using Magnuszewski.LaptopsApp.Interfaces
+@using Magnuszewski.LaptopsApp.DAO
+@inject ILaptopStorage LaptopStorage
+@inject NavigationManager NavigationManager
+
+<h3>Add Producer</h3>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Producers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        @foreach (var producer in Producers)
+                        {
+                            <button @onclick="() => SelectProducer(producer)"
+                                    class="list-group-item list-group-item-action @(SelectedProducer == producer ? "active" : "")">
+                                @producer.Name
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Add New Producer</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label><strong>Producer Name:</strong></label>
+                        <input @bind="NewProducerName" class="form-control" placeholder="Enter producer name" />
+                    </div>
+                    <div class="form-group">
+                        <button @onclick="AddProducer" class="btn btn-primary">Add Producer</button>
+                        <button @onclick="DeleteProducer" class="btn btn-danger" disabled="@(!CanDeleteProducer)">Delete Producer</button>
+                    </div>
+                    <div class="text-danger">
+                        @ErrorMessage
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<IProducer> Producers;
+    private IProducer SelectedProducer;
+    private string NewProducerName;
+    private string ErrorMessage;
+    private bool CanDeleteProducer => SelectedProducer != null;
+
+    protected override void OnInitialized()
+    {
+        Producers = LaptopStorage.GetProducers() ?? new List<IProducer>();
+    }
+
+    private void AddProducer()
+    {
+        if (string.IsNullOrWhiteSpace(NewProducerName))
+        {
+            ErrorMessage = "Producer name cannot be empty.";
+            return;
+        }
+
+        var newProducer = new Producer { Name = NewProducerName };
+        LaptopStorage.AddProducer(newProducer);
+        Producers = LaptopStorage.GetProducers();
+        NewProducerName = string.Empty;
+        ErrorMessage = string.Empty;
+    }
+
+    private void DeleteProducer()
+    {
+        if (SelectedProducer != null)
+        {
+            LaptopStorage.DeleteProducer(SelectedProducer.Id);
+            Producers = LaptopStorage.GetProducers();
+            SelectedProducer = null;
+        }
+    }
+
+    private void SelectProducer(IProducer producer)
+    {
+        SelectedProducer = producer;
+    }
+}

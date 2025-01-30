@@ -1,0 +1,246 @@
+﻿@page "/"
+@using Magnuszewski.LaptopsApp.Core
+@using Magnuszewski.LaptopsApp.Interfaces
+@using Magnuszewski.LaptopsApp.DAO
+@inject ILaptopStorage LaptopStorage
+@inject NavigationManager NavigationManager
+
+<h3>Laptop App</h3>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input @bind="SearchQuery" @oninput="OnSearchInput" class="form-control" placeholder="Search by Model" />
+            </div>
+            <div class="list-group">
+                @foreach (var laptop in FilteredLaptops)
+                {
+                    <button @onclick="() => SelectLaptop(laptop)"
+                            class="list-group-item list-group-item-action @(SelectedLaptop == laptop ? "active" : "")">
+                        @laptop.Model
+                    </button>
+                }
+            </div>
+            <div class="mt-3">
+                <button @onclick="AddLaptop" class="btn btn-primary">Add Laptop</button>
+                <button @onclick="OpenAddProducer" class="btn btn-secondary">Update Producers</button>
+                <button @onclick="DeleteLaptop" class="btn btn-danger" disabled="@(!CanModifyLaptop)">Delete Laptop</button>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Laptop Details</h5>
+                </div>
+                <div class="card-body">
+                    @if (SelectedLaptop != null)
+                    {
+                        <div class="form-group">
+                            <label><strong>ID:</strong></label>
+                            <p>@SelectedLaptop.Id</p>
+                        </div>
+                        <div class="form-group">
+                            <label><strong>Model:</strong></label>
+                            <input @bind="SelectedLaptop.Model" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label><strong>Producer:</strong></label>
+                            <select @bind="SelectedProducerId" class="form-control">
+                                <option value="">Select a producer</option>
+                                @foreach (var producer in Producers)
+                                {
+                                    <option value="@producer.Id">@producer.Name</option> 
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><strong>Type:</strong></label>
+                            <select @bind="SelectedLaptop.Type" class="form-control">
+                                @foreach (var type in LaptopTypes)
+                                {
+                                    <option value="@type">@type</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><strong>Price:</strong></label>
+                            <input @bind="SelectedLaptop.Price" type="number" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <button @onclick="SaveLaptop" class="btn btn-success" disabled="@(!CanSaveLaptop)">Save</button>
+                        </div>
+                        <div class="text-danger">
+                            @ErrorMessage
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No laptop selected.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<ILaptop> Laptops { get; set; } = new List<ILaptop>();
+    private IEnumerable<IProducer> Producers { get; set; } = new List<IProducer>();
+    private ILaptop SelectedLaptop { get; set; }
+    private ILaptop NewLaptop { get; set; }
+    private Array LaptopTypes { get; set; } = Array.Empty<object>();
+    private string ErrorMessage { get; set; } = string.Empty;
+    private string SearchQuery { get; set; } = string.Empty; 
+    private List<ILaptop> FilteredLaptops { get; set; } = new List<ILaptop>(); 
+    private List<int> AvailableIds { get; set; } = new List<int>(); 
+    private int NextId { get; set; }
+    private int SelectedProducerId { get; set; } 
+    private bool CanModifyLaptop => SelectedLaptop != null;
+    private bool CanSaveLaptop => NewLaptop != null || SelectedLaptop != null;
+
+    protected override void OnInitialized()
+    {
+        Laptops = LaptopStorage.GetLaptops() ?? new List<ILaptop>();
+        Producers = LaptopStorage.GetProducers() ?? new List<IProducer>();
+        LaptopTypes = Enum.GetValues(typeof(LaptopType));
+        AvailableIds = new List<int>();
+        NextId = Laptops.Any() ? Laptops.Max(l => l.Id) + 1 : 1;
+        FilterLaptops(); 
+    }
+
+    private void AddLaptop()
+    {
+        int id = AvailableIds.Any() ? AvailableIds.First() : NextId++;
+        if (AvailableIds.Any())
+        {
+            AvailableIds.RemoveAt(0);
+        }
+
+        NewLaptop = new Laptop
+            {
+                Id = id,
+                Producer = new Producer()
+            };
+        SelectedLaptop = NewLaptop;
+        ErrorMessage = string.Empty;
+    }
+
+    private void SaveLaptop()
+    {
+        if (NewLaptop != null)
+        {
+            if (string.IsNullOrWhiteSpace(NewLaptop.Model))
+            {
+                ErrorMessage = "Model field must be filled.";
+                return;
+            }
+            if (SelectedProducerId == 0)
+            {
+                ErrorMessage = "Producer field must be filled.";
+                return;
+            }
+            var selectedProducer = Producers.FirstOrDefault(p => p.Id == SelectedProducerId);
+            if (selectedProducer != null)
+            {
+                NewLaptop.Producer = selectedProducer;
+            }
+
+            if (NewLaptop.Price <= 0)
+            {
+                ErrorMessage = "Price must be greater than 0.";
+                return;
+            }
+
+            LaptopStorage.AddLaptop(NewLaptop);
+            Laptops = LaptopStorage.GetLaptops();
+            FilterLaptops(); 
+            NewLaptop = null;
+        }
+        else if (SelectedLaptop != null)
+        {
+            if (string.IsNullOrWhiteSpace(SelectedLaptop.Model))
+            {
+                ErrorMessage = "Model field must be filled.";
+                return;
+            }
+            if (SelectedProducerId == 0)
+            {
+                ErrorMessage = "Producer field must be filled.";
+                return;
+            }
+            var selectedProducer = Producers.FirstOrDefault(p => p.Id == SelectedProducerId);
+            if (selectedProducer != null)
+            {
+                SelectedLaptop.Producer = selectedProducer;
+            }
+
+            if (SelectedLaptop.Price <= 0)
+            {
+                ErrorMessage = "Price must be greater than 0.";
+                return;
+            }
+
+            LaptopStorage.UpdateLaptop(SelectedLaptop);
+            FilterLaptops();
+        }
+
+        ErrorMessage = string.Empty;
+    }
+
+    private void DeleteLaptop()
+    {
+        if (SelectedLaptop != null)
+        {
+            LaptopStorage.DeleteLaptop(SelectedLaptop.Id);
+            AvailableIds.Add(SelectedLaptop.Id);
+            Laptops = LaptopStorage.GetLaptops();
+            FilterLaptops();
+            SelectedLaptop = null;
+        }
+    }
+
+
+    private void OpenAddProducer()
+    {
+        NavigationManager.NavigateTo("/producer-page");
+    }
+
+    private void SelectLaptop(ILaptop laptop)
+    {
+        SelectedLaptop = laptop;
+        SelectedProducerId = SelectedLaptop.Producer?.Id ?? 0;
+    }
+
+    private void FilterLaptops()
+    {
+        FilteredLaptops.Clear();
+
+        if (string.IsNullOrWhiteSpace(SearchQuery))
+        {
+
+            foreach (var laptop in Laptops)
+            {
+                FilteredLaptops.Add(laptop);
+            }
+        }
+        else
+        {
+
+            var filtered = Laptops.Where(l => l.Model.IndexOf(SearchQuery, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            foreach (var laptop in filtered)
+            {
+                FilteredLaptops.Add(laptop);
+            }
+        }
+        StateHasChanged();
+    }
+
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        SearchQuery = e.Value.ToString();
+        FilterLaptops();
+    }
+}
