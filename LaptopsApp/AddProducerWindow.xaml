@@ -22,12 +22,12 @@
             <TextBlock Text="Add New Producer" FontWeight="Bold" Margin="0,0,0,10"/>
             <Grid>
                 <TextBox Text="{Binding NewProducerName, UpdateSourceTrigger=PropertyChanged}" 
-                         Width="200" Height="30" Margin="0,0,0,10"/>
+                         Width="200" Height="30" Margin="0,0,0,10" TextAlignment="Center" VerticalContentAlignment="Center" MaxLength="40" HorizontalAlignment="Center" MaxLines="1"/>
                 <TextBlock Text="Enter producer name" 
                            Foreground="Gray" 
                            VerticalAlignment="Top" 
-                           HorizontalAlignment="Left" 
-                           Margin="40,7,0,0" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,7,0,0" 
                            IsHitTestVisible="False" 
                            Visibility="{Binding NewProducerName, Converter={StaticResource StringIsNullOrEmptyConverter}}"/>
             </Grid>

@@ -36,7 +36,6 @@ namespace Magnuszewski.LaptopsApp.ViewModels
             AddLaptopCommand = new RelayCommand(AddLaptop);
             SaveLaptopCommand = new RelayCommand(SaveLaptop, CanSaveLaptop);
             DeleteLaptopCommand = new RelayCommand(DeleteLaptop, CanModifyLaptop);
-            CancelAddLaptopCommand = new RelayCommand(CancelAddLaptop);
             OpenAddProducerCommand = new RelayCommand(OpenAddProducer);
         }
 
@@ -118,7 +117,6 @@ namespace Magnuszewski.LaptopsApp.ViewModels
         public ICommand AddLaptopCommand { get; }
         public ICommand SaveLaptopCommand { get; }
         public ICommand DeleteLaptopCommand { get; }
-        public ICommand CancelAddLaptopCommand { get; }
         public ICommand OpenAddProducerCommand { get; }
 
         private void AddLaptop()
@@ -214,12 +212,6 @@ namespace Magnuszewski.LaptopsApp.ViewModels
         }
 
         private bool CanModifyLaptop() => SelectedLaptop != null;
-
-        private void CancelAddLaptop()
-        {
-            NewLaptop = null;
-            ErrorMessage = string.Empty;
-        }
 
         private void OpenAddProducer()
         {
