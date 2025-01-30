@@ -15,8 +15,8 @@ namespace Magnuszewski.LaptopsApp.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly ILaptopStorage laptopStorage;
-        private ILaptop selectedLaptop;
-        private ILaptop newLaptop;
+        private Laptop selectedLaptop;
+        private Laptop newLaptop;
         private string errorMessage;
         private string searchQuery;
         private List<int> availableIds;
@@ -47,24 +47,48 @@ namespace Magnuszewski.LaptopsApp.ViewModels
         public ObservableCollection<IProducer> Producers { get; }
         public Array LaptopTypes { get; }
 
-        public ILaptop SelectedLaptop
+        public Laptop SelectedLaptop
         {
             get => selectedLaptop;
             set
             {
+                if (selectedLaptop != null)
+                {
+                    selectedLaptop.PropertyChanged -= Laptop_PropertyChanged;
+                }
+
                 selectedLaptop = value;
+
+                if (selectedLaptop != null)
+                {
+                    selectedLaptop.PropertyChanged += Laptop_PropertyChanged;
+                }
+
+                IsLaptopValid(selectedLaptop);
                 OnPropertyChanged();
                 ((RelayCommand)DeleteLaptopCommand).RaiseCanExecuteChanged();
                 ((RelayCommand)SaveLaptopCommand).RaiseCanExecuteChanged();
             }
         }
 
-        public ILaptop NewLaptop
+        public Laptop NewLaptop
         {
             get => newLaptop;
             set
             {
+                if (newLaptop != null)
+                {
+                    newLaptop.PropertyChanged -= Laptop_PropertyChanged;
+                }
+
                 newLaptop = value;
+
+                if (newLaptop != null)
+                {
+                    newLaptop.PropertyChanged += Laptop_PropertyChanged;
+                }
+
+                IsLaptopValid(newLaptop);
                 OnPropertyChanged();
                 ((RelayCommand)SaveLaptopCommand).RaiseCanExecuteChanged();
             }
@@ -99,7 +123,7 @@ namespace Magnuszewski.LaptopsApp.ViewModels
 
         private void AddLaptop()
         {
-            int id = availableIds.Any() ? availableIds.First() : nextId++;
+            int id = availableIds.Any() ? availableIds.First() : nextId;
             if (availableIds.Any())
             {
                 availableIds.RemoveAt(0);
@@ -108,7 +132,7 @@ namespace Magnuszewski.LaptopsApp.ViewModels
             NewLaptop = new Laptop
             {
                 Id = id,
-                Producer = new Producer()
+                Producer = (Producer)(Producers.FirstOrDefault() ?? new Producer())
             };
             SelectedLaptop = NewLaptop;
             ErrorMessage = string.Empty;
@@ -118,20 +142,12 @@ namespace Magnuszewski.LaptopsApp.ViewModels
         {
             if (NewLaptop != null)
             {
-                if (string.IsNullOrWhiteSpace(NewLaptop.Model))
+                if (!IsLaptopValid(NewLaptop)) return;
+
+                NewLaptop.Id = availableIds.Any() ? availableIds.First() : nextId++;
+                if (availableIds.Any())
                 {
-                    ErrorMessage = "Model field must be filled.";
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(NewLaptop.Producer.Name))
-                {
-                    ErrorMessage = "Producer field must be filled.";
-                    return;
-                }
-                if (NewLaptop.Price <= 0)
-                {
-                    ErrorMessage = "Price must be greater than 0.";
-                    return;
+                    availableIds.RemoveAt(0);
                 }
 
                 laptopStorage.AddLaptop(NewLaptop);
@@ -141,27 +157,46 @@ namespace Magnuszewski.LaptopsApp.ViewModels
             }
             else if (SelectedLaptop != null)
             {
-                if (string.IsNullOrWhiteSpace(SelectedLaptop.Model))
-                {
-                    ErrorMessage = "Model field must be filled.";
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(SelectedLaptop.Producer.Name))
-                {
-                    ErrorMessage = "Producer field must be filled.";
-                    return;
-                }
-                if (SelectedLaptop.Price <= 0)
-                {
-                    ErrorMessage = "Price must be greater than 0.";
-                    return;
-                }
+                if (!IsLaptopValid(SelectedLaptop)) return;
 
                 laptopStorage.UpdateLaptop(SelectedLaptop);
                 FilterLaptops();
             }
 
             ErrorMessage = string.Empty;
+        }
+
+        private bool IsLaptopValid(ILaptop laptop)
+        {
+            if (laptop == null)
+            {
+                ErrorMessage = string.Empty;
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(laptop.Model))
+            {
+                ErrorMessage = "Model field must be filled.";
+                return false;
+            }
+            else if (string.IsNullOrWhiteSpace(laptop.Producer.Name))
+            {
+                ErrorMessage = "Producer field must be filled.";
+                return false;
+            }
+            else if (laptop.Price <= 0)
+            {
+                ErrorMessage = "Price must be greater than 0.";
+                return false;
+            }
+
+            ErrorMessage = string.Empty;
+            return true;
+        }
+
+        private void Laptop_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            IsLaptopValid(sender as ILaptop);
         }
 
         private bool CanSaveLaptop() => NewLaptop != null || SelectedLaptop != null;

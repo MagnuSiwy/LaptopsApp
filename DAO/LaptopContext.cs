@@ -17,7 +17,7 @@ namespace Magnuszewski.LaptopsApp.DAO
             modelBuilder.Entity<Laptop>()
                 .HasOne(l => l.Producer)
                 .WithMany()
-                .HasForeignKey(l => l.ProducerId); // Use foreign key property
+                .HasForeignKey(l => l.ProducerId);
 
             base.OnModelCreating(modelBuilder);
         }

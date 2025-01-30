@@ -27,13 +27,13 @@ namespace Magnuszewski.LaptopsApp.DAO
 
         public void AddLaptop(ILaptop laptop)
         {
-            context.Laptops.Add((Laptop)laptop); // Cast to the correct type
+            context.Laptops.Add((Laptop)laptop);
             context.SaveChanges();
         }
 
         public void UpdateLaptop(ILaptop laptop)
         {
-            context.Laptops.Update((Laptop)laptop); // Cast to the correct type
+            context.Laptops.Update((Laptop)laptop);
             context.SaveChanges();
         }
 
@@ -66,7 +66,7 @@ namespace Magnuszewski.LaptopsApp.DAO
 
         public void AddProducer(IProducer producer)
         {
-            context.Producers.Add((Producer)producer); // Cast to the correct type
+            context.Producers.Add((Producer)producer);
             context.SaveChanges();
         }
 
