@@ -10,7 +10,7 @@ namespace Magnuszewski.LaptopsApp.DAOFile
 {
     public class FileLaptopStorage : ILaptopStorage
     {
-        private readonly string filePath = "laptops.csv";
+        private readonly string filePath = @"C:\Users\student\Documents\LaptopsApp\laptops.csv";
         private List<ILaptop> laptops;
         private List<IProducer> producers;
 

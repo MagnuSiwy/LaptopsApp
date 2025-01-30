@@ -13,6 +13,7 @@ namespace Magnuszewski.LaptopsApp.DAO
         private LaptopType type;
         private double price;
 
+       
         public int Id
         {
             get => id;

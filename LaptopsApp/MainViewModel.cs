@@ -27,7 +27,7 @@ namespace Magnuszewski.LaptopsApp.ViewModels
             this.laptopStorage = laptopStorage ?? throw new ArgumentNullException(nameof(laptopStorage));
             Laptops = new ObservableCollection<ILaptop>(laptopStorage.GetLaptops());
             FilteredLaptops = new ObservableCollection<ILaptop>(Laptops);
-            Producers = new ObservableCollection<IProducer>(laptopStorage.GetProducers());
+            Producers = new ObservableCollection<IProducer>(laptopStorage.GetProducers() ?? new List<IProducer>());
             LaptopTypes = Enum.GetValues(typeof(LaptopType));
 
             availableIds = new List<int>();
@@ -63,6 +63,8 @@ namespace Magnuszewski.LaptopsApp.ViewModels
                     selectedLaptop.PropertyChanged += Laptop_PropertyChanged;
                 }
 
+                // RefreshLaptops();
+
                 IsLaptopValid(selectedLaptop);
                 OnPropertyChanged();
                 ((RelayCommand)DeleteLaptopCommand).RaiseCanExecuteChanged();
@@ -87,10 +89,25 @@ namespace Magnuszewski.LaptopsApp.ViewModels
                     newLaptop.PropertyChanged += Laptop_PropertyChanged;
                 }
 
+                //RefreshLaptops();
+
                 IsLaptopValid(newLaptop);
                 OnPropertyChanged();
                 ((RelayCommand)SaveLaptopCommand).RaiseCanExecuteChanged();
             }
+        }
+
+        private void RefreshLaptops()
+        {
+            var updatedLaptops = laptopStorage.GetLaptops();
+            Laptops.Clear();
+
+            foreach (var laptop in updatedLaptops)
+            {
+                Laptops.Add(laptop);
+            }
+
+            FilterLaptops();
         }
 
         public string ErrorMessage

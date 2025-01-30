@@ -9,7 +9,8 @@ namespace Magnuszewski.LaptopsApp.DAO
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=laptops.db");
+            string dataBasePath = @"C:\Users\student\Documents\LaptopsApp\laptops.db";
+            optionsBuilder.UseSqlite($"Data Source={dataBasePath}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

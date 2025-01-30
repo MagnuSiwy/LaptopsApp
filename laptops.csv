@@ -1,0 +1,8 @@
+Id,Model,ProducerId,ProducerName,Type,Price
+1,ThinkPad T14s gen 1 (AMD),1,Lenovo,Business,400
+2,ThinkPad x270,1,Lenovo,Business,100
+3,Latitude 3550,2,Dell,Business,700
+4,G15 5530,2,Dell,Gaming,1700
+5,IdeaPad Gaming 3 15ARH05,1,Lenovo,Gaming,700
+6,Vivobook 15,3,Asus,Business,500
+7,sldfkj,3,Asus,Notebook,300
